@@ -1,6 +1,6 @@
 {
-  "short_name": "呼吸数測定",
-  "name": "呼吸数測定",
+  "short_name": "Vital",
+  "name": "Vital Check",
   "icons": [
     {
       "src": "favicon.ico",

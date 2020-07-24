@@ -44,7 +44,7 @@ const useSufficientVibration = () =>{
       unsubscribePulse.unsubscribe();
     }
     
-  })
+  },[])
 }
 
 function DualVitalCount(){

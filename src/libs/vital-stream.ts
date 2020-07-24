@@ -146,7 +146,9 @@ const makeVitalStream= (option?:vitalStreamOption)=>{
     startWith(false),
     distinctUntilChanged(),
     )
-  const onSufficient = isSufficient.pipe(filter(v=>v!==false));
+  const onSufficient = isSufficient.pipe(
+    filter(v=>v!==false),
+  );
 
   const historyData = onNext.pipe(
     map(([prev])=>prev),

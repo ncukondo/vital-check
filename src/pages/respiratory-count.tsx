@@ -32,7 +32,7 @@ const useSufficientVibration = ()=>{
   useEffect(()=>{
     const subscription = onSufficient.subscribe(v=>vibrate([400]));
     return () => subscription.unsubscribe();  
-  })
+  },[])
 }
 
 function RespiratoryCount(){
