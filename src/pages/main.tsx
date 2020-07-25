@@ -8,6 +8,9 @@ import Tab from '@material-ui/core/Tab';
 import  {RespiratoryCount} from './respiratory-count';
 import  {PulseCount} from './pulse-count';
 import  {DualVitalCount} from './dual-vital-count';
+import {localData} from '../libs/local-data';
+
+const {getCurrent:getDefaultTab,set:setDefaultTab} = localData('defaultTab','/resp');
 
 const useStyles = makeStyles((theme:Theme) => createStyles({
   container:{
@@ -27,16 +30,23 @@ type TabInfo = {[key:string]:string};
 interface TabProps  {
   info:TabInfo;
   value?:string;
-  onChange?: (event: React.ChangeEvent<{}>, newValue: string) => void; 
+  onChange?: (newValue: string) => void; 
+}
+
+const toDefaultTab = (callback:(value:string)=>void) =>{
+  getDefaultTab().then(tabName=>callback(tabName));
 }
 
 const AppTabs = (props:TabProps) => {
   const {value,info,onChange} = props;
+  console.log(`tabvalue:${value}`);
   const history = useHistory();
   const path = history.location.pathname;
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+  if(!value && path==="/" && onChange) toDefaultTab(onChange);
+  const handleChange = (newValue: string) => {
     history.push(newValue);
-    onChange && onChange(event,newValue);
+    setDefaultTab(newValue);
+    onChange && onChange(newValue);
   };
 
   return (
@@ -45,7 +55,7 @@ const AppTabs = (props:TabProps) => {
         value={value || path}
         indicatorColor="primary"
         textColor="primary"
-        onChange={handleChange}
+        onChange={(e,value)=>handleChange(value)}
         centered
       >
       {Object.entries(info).map(([key,value]) =>
@@ -56,12 +66,23 @@ const AppTabs = (props:TabProps) => {
   );
 }
 
-
-const Body = ()=>{
+type BodyProps ={
+  defaultPath:string
+}
+const Body = (props:BodyProps)=>{
+  const {defaultPath: defaultValue} = props;
   const classes = classMaker(useStyles());
+  const defaultComp = (path:string)=>{
+    switch(path){
+      case '/resp': return RespiratoryCount
+      case '/pulse': return PulseCount
+      case '/both': return DualVitalCount
+      default: return  RespiratoryCount;
+    }
+  }
   return (
     <div {...classes('body')}>
-      <Route exact path='/' component={RespiratoryCount}/>
+      <Route exact path='/' component={defaultComp(defaultValue)}/>
       <Route exact path='/resp' component={RespiratoryCount}/>
       <Route exact path='/pulse' component={PulseCount}/>
       <Route path='/both' component={DualVitalCount}/>
@@ -74,7 +95,7 @@ export default function Main() {
 
   const [value, setValue] = React.useState("");
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+  const handleChange = (newValue: string) => {
     setValue(newValue);
   };
   const info ={
@@ -86,7 +107,7 @@ export default function Main() {
   return (
     <Router {...classes('container')}>
       <AppTabs  {...classes('tabs')} info={info} value={value} onChange={handleChange} />
-      <Body />
+      <Body defaultPath={value} />
     </Router>
   );
 }
