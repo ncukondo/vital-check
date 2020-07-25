@@ -18,7 +18,8 @@ const {
   currentData,
   historyData,
   onSufficient,
-  fire
+  fire,
+  reset,
 } = makeVitalStream({vitalName:"PR",sufficientLimit:15000,autoCloseDelay:15000}) 
 
 onSufficient.subscribe(v=>vibrate([400]));
@@ -35,11 +36,21 @@ const useSufficientVibration = ()=>{
   },[])
 }
 
+const useOnDestroy = () =>{
+  useEffect(()=>{
+    return ()=>{
+      reset();
+    }
+  },[])
+}
+
+
 function PulseCount(){
   const classes = classMaker(useStyles());
   const history = useObservable(()=>historyData);
   const info = useObservable(()=>currentData);
   useSufficientVibration();
+  useOnDestroy();
 
   return makeLayout(
     <ShowVitalInfo {...{info}} />,

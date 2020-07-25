@@ -18,7 +18,8 @@ const {
   currentData,
   historyData,
   onSufficient,
-  fire
+  fire,
+  reset,
 } = makeVitalStream() 
 
 onSufficient.subscribe(v=>vibrate([400]));
@@ -35,11 +36,21 @@ const useSufficientVibration = ()=>{
   },[])
 }
 
+const useOnDestroy = () =>{
+  useEffect(()=>{
+    return ()=>{
+      reset();
+    }
+  },[])
+}
+
+
 function RespiratoryCount(){
   const classes = classMaker(useStyles());
   const history = useObservable(()=>historyData);
   const info = useObservable(()=>currentData);
   useSufficientVibration();
+  useOnDestroy();
 
   return makeLayout(
     <ShowVitalInfo {...{info}} />,

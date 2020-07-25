@@ -47,6 +47,11 @@ const makeDualVitalStream = ()=>{
       map(([infos,index])=> infos.map((info,i)=> i!==index ? close(info): info)),
       scan((list,current)=>[current,...list],[] as VitalInfo[][])
     )
+  
+  const reset = ()=>{
+    pulseReset();
+    respReset();
+  }
 
   return {
     historyData,
@@ -54,6 +59,7 @@ const makeDualVitalStream = ()=>{
     firePulse,
     currentData,
     onRespSufficient,
+    reset,
     onPulseSufficient
   }
 

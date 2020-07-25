@@ -20,7 +20,8 @@ const {
   firePulse,
   currentData,
   onRespSufficient,
-  onPulseSufficient
+  onPulseSufficient,
+  reset,
 } = makeDualVitalStream();
 
 
@@ -47,11 +48,21 @@ const useSufficientVibration = () =>{
   },[])
 }
 
+const useOnDestroy = () =>{
+  useEffect(()=>{
+    return ()=>{
+      reset();
+    }
+  },[])
+}
+
+
 function DualVitalCount(){
   const classes = classMaker(useStyles());
   const vitals = useObservable(()=>currentData);
   const history = useObservable(()=>historyData);
   useSufficientVibration();
+  useOnDestroy();
 
   return makeLayout(
     <div>
